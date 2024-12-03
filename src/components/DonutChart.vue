@@ -2,12 +2,47 @@
     <div class="donut">
         <Doughnut :data="chartData" :options="options" />
     </div>
-    <div class="wou">
-        <button @click="addExpense">Agregar Gasto</button>
-        <p>{{ gastosActuales }} de {{ presupuesto }} </p>
-    </div>
 </template>
 
+<script>
+import { Doughnut } from 'vue-chartjs';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+export default {
+    components: { Doughnut },
+    props: {
+        data: {
+            type: Object,
+            required: true,
+        },
+        options: {
+            type: Object,
+            default: () => ({
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                },
+                animation: {
+                    animateRotate: true,
+                    duration: 1000,
+                },
+            }),
+        },
+    },
+    computed: {
+        chartData() {
+            return this.data;
+        },
+    },
+};
+</script>
+
+
+<!--
 <script>
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
@@ -83,10 +118,10 @@ export default {
     },
 };
 </script>
+-->
 
 <style scoped>
-
-.wou{
+.wou {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -94,6 +129,4 @@ export default {
     gap: 0.5rem;
     margin-top: 1rem;
 }
-
-
 </style>

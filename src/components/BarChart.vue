@@ -17,6 +17,27 @@ import { Bar } from 'vue-chartjs'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default {
+    props: ['data'],
+    components: {
+        Bar
+    },
+    data() {
+        return {
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        };
+    }
+};
+
+/*
+export default {
     name: 'App',
     components: {
         Bar
@@ -45,4 +66,6 @@ export default {
         }
     }
 }
+    */
+
 </script>

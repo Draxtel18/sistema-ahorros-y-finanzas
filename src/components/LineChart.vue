@@ -26,6 +26,27 @@ ChartJS.register(
 )
 
 export default {
+    props: ['data'],
+    components: {
+        Line
+    },
+    data() {
+        return {
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        };
+    }
+};
+
+/*
+export default {
     name: 'App',
     components: {
         Line
@@ -54,4 +75,5 @@ export default {
         }
     }
 }
+*/
 </script>
