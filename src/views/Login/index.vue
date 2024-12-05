@@ -10,8 +10,8 @@
 				</div>
 			</section>
 			<form @submit.prevent="handleLogin()" class="login-form">
-				<label for="username">Usuario</label>
-				<input v-model="email" type="text" id="username" placeholder="Ingrese su usuario" required>
+				<label for="username">Correo Electronico</label>
+				<input v-model="email" type="text" id="username" placeholder="Ingrese su correo" required>
 
 				<label for="password">Contraseña</label>
 				<input v-model="password" type="password" id="password" placeholder="Ingrese su contraseña">
