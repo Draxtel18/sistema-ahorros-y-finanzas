@@ -9,7 +9,7 @@ export default {
         return {
             showModal: false
         }
-    }
+    },
 }
 </script>
 
@@ -24,9 +24,14 @@ export default {
         <modalGastos :show="showModal" @close="showModal = false">
         </modalGastos>
     </Teleport>
+
 </template>
 
 <style scoped>
+.tabla{
+    display: inherit;
+}
+
 button {
     width: 100%;
     height: 100%;
@@ -35,7 +40,7 @@ button {
     cursor: pointer;
 }
 
-span{
+span {
     width: 100%;
     padding: auto;
 }
@@ -55,5 +60,4 @@ span{
 .icon:hover {
     transform: rotate(180deg) scale(1.3);
 }
-
 </style>

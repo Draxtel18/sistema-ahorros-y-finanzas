@@ -34,10 +34,10 @@ export default {
                     .from('gastos')
                     .insert([
                         {
-                            user_id: user.id, // ID del usuario actual
+                            user_id: user.id, 
                             monto: parseFloat(this.gasto),
                             categoria: this.categoria,
-                            fecha: new Date(), // Fecha actual
+                            fecha: new Date(),
                             descripcion: this.descripcion,
                             mes: mesActual,
                             año: añoActual,
@@ -51,6 +51,7 @@ export default {
                 this.categoria = '';
                 this.descripcion = '';
                 this.$emit('close');
+                this.$emit('nuevoGasto');
                 alert('Gasto registrado con éxito.');
             } catch (error) {
                 console.error('Error registrando gasto:', error.message);
@@ -102,8 +103,8 @@ export default {
                                     {{ cat }}
                                 </option>
                             </select>
-                            <label for="ipDescripcion">Agregar Descripcion</label>
-                            <textarea v-model="descripcion" type="text" id="ipDescripcion" placeholder="Opcional (Max. 100 caracteres)" 
+                            <label for="ipDescripcion">Agregar Descripcion (Opcional)</label>
+                            <textarea v-model="descripcion" type="text" id="ipDescripcion" placeholder="Max. 100 caracteres" 
                             v-bind:maxlength="100   "></textarea>
                         </form>
                     </slot>
@@ -120,43 +121,6 @@ export default {
 </template>
 
 <style scoped>
-.modal-mask {
-    position: fixed;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    transition: opacity 0.3s ease;
-}
-
-.modal-container {
-    width: 300px;
-    margin: auto;
-    padding: 20px 30px;
-    background-color: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-    transition: all 0.3s ease;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    margin-top: 0;
-    color: #42b983;
-}
-
-.modal-body {
-    margin: 20px 0;
-}
-
 .modal-footer .modal-default-button {
     float: right;
     background-color: #42b983;
@@ -181,27 +145,8 @@ export default {
     resize: none;
 }
 
-
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
-.modal-enter-from {
-    opacity: 0;
+textarea {
+    height: 70px;
 }
 
-.modal-leave-to {
-    opacity: 0;
-}
-
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
-}
 </style>

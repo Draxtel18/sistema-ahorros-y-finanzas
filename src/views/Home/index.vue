@@ -1,47 +1,11 @@
-<template>
-	<main>
-		<div v-if="loading">
-			<svg viewBox="25 25 50 50">
-				<circle r="20" cy="50" cx="50"></circle>
-			</svg>
-		</div>
-		<section v-else>
-			<div class="div1">
-				<h2>Gastos</h2>
-				<div class="donut">
-					<DonutChart v-if="gastosData" :data="gastosData" />
-					<p>Has gastado {{gastado}} de {{ total }}</p>
-				</div>
-				<div class="cont-button">
-					<router-link to="/gastos" class="button">Ir a gastos</router-link>
-				</div>
-			</div>
-			<div class="div2">
-				<h2>Ahorros</h2>
-				<div>
-					<LineChart v-if="ahorrosData" :data="ahorrosData" />
-				</div>
-				<div class="cont-button">
-					<router-link to="/ahorros" class="button">Ir a ahorros</router-link>
-				</div>
-			</div>
-			<div class="div3">
-				<h2>Ingresos Extras</h2>
-				<div>
-					<BarChart v-if="ingresosData" :data="ingresosData" />
-				</div>
-				<div class="cont-button">
-					<router-link to="/ingresos" class="button">Ir a ingresos</router-link>
-				</div>
-			</div>
-		</section>
-	</main>
-</template>
-
 <script>
+/*
 import DonutChart from '@/components/DonutChart.vue';
 import LineChart from '@/components/LineChart.vue';
 import BarChart from '@/components/BarChart.vue';
+*/
+import ModalPlan from './components/modalPlan.vue';
+
 
 import { supabase } from '@/lib/supabaseClient.js';
 
@@ -50,21 +14,60 @@ const { data: { user } } = await supabase.auth.getUser()
 
 export default {
 	components: {
+		/*
 		DonutChart,
 		LineChart,
-		BarChart
+		BarChart,
+		*/
+		ModalPlan,
 	},
 	data() {
 		return {
+			/*
 			gastosData: null,
 			ahorrosData: null,
 			ingresosData: null,
 			gastado: null,
 			total: null,
+			*/
+			planActual: null,
 			loading: true,
+			showModal: false,
 		};
 	},
 	methods: {
+		async cargarPlanActual() {
+			const { data, error } = await supabase
+				.from("planesfinanzas")
+				.select("*")
+				.eq("estado", "activo")
+				.eq("id_usuario", user.id)
+				.single();
+
+
+			if (error) {
+				console.error("Error al cargar el plan actual:", error.message);
+				this.planActual = null;
+			} else {
+				this.planActual = data;
+			}
+		},
+		async cancelarPlan() {
+			if (confirm("¿Estás seguro de cancelar el plan actual?")) {
+				const { error } = await supabase
+					.from("planesfinanzas")
+					.update({ estado: "cancelado" })
+					.eq("id_plan", this.planActual.id_plan);
+
+				if (error) {
+					console.error("Error al cancelar el plan:", error.message);
+				} else {
+					alert("Plan cancelado con éxito.");
+					this.planActual = null;
+				}
+			}
+		},
+		/*
 		async fetchGastos() {
 			const mesActual = new Date().getMonth() + 1;
 			const añoActual = new Date().getFullYear();
@@ -144,7 +147,6 @@ export default {
 					.eq('user_id', user.id)
 					.eq('fuente', 'Extra');
 				if (error) throw error;
-				console.log(ingresos);
 
 				const datosIngresos = meses.map(mes => {
 					const ingresosMes = ingresos.filter(i => i.mes === mes);
@@ -152,7 +154,6 @@ export default {
 						? ingresosMes.reduce((suma, ingreso) => suma + ingreso.monto, 0)
 						: null;
 				});
-				console.log(datosIngresos);
 
 				this.ingresosData = {
 					labels: meses.map(m => this.getNombreMes(m)),
@@ -176,35 +177,117 @@ export default {
 			const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 			return nombresMeses[mes - 1];
 		},
+		*/
 	},
 	async mounted() {
+		/*
 		await Promise.all([
 			this.fetchGastos(),
 			this.fetchAhorros(),
 			this.fetchIngresos(),
 		]);
-		this.loading = false;
 		this.gastado;
+		*/
+		await this.cargarPlanActual();
+		this.loading = false;
 		this.presupuesto;
 	}
 };
-
 </script>
 
+<template>
+	<main>
+		<div v-if="loading">
+			<svg viewBox="25 25 50 50">
+				<circle r="20" cy="50" cx="50"></circle>
+			</svg>
+		</div>
+		<section v-else>
+			<div class="home-grid" v-if="planActual">
+				<div class="div1">
+					<h2>Plan Actual</h2>
+					<div>
+						<div>
+							<p><strong>Fecha de inicio:</strong> {{ planActual.fecha_inicio }}</p>
+							<p><strong>Fecha de fin:</strong> {{ planActual.fecha_fin }}</p>
+							<p><strong>Sueldo base:</strong> {{ planActual.sueldo_base }}</p>
+						</div>
+						<div>
+							<button id="show-modal" @click="showModal = true">Comenzar Nuevo Plan</button>
+							<button @click="cancelarPlan">Cancelar Plan Actual</button>
+						</div>
+					</div>
+				</div>
+				<div class="div2">
+					<h2>Gastos</h2>
+					<div class="donut">
+						<!--
+							<DonutChart v-if="gastosData" :data="gastosData" />
+							<p>Has gastado {{ gastado }} de {{ total }} </p>
+						s-->
+					</div>
+					<div class="cont-button">
+						<router-link to="/gastos" class="button">Ir a gastos</router-link>
+					</div>
+				</div>
+				<div class="div3">
+					<h2>Ahorros</h2>
+					<div>
+						<!--
+							<LineChart v-if="ahorrosData" :data="ahorrosData" />
+						-->
+					</div>
+					<div class="cont-button">
+						<router-link to="/ahorros" class="button">Ir a ahorros</router-link>
+					</div>
+				</div>
+				<div class="div4">
+					<h2>Ingresos Extras</h2>
+					<div>
+						<!--
+							<BarChart v-if="ingresosData" :data="ingresosData" />
+						-->
+					</div>
+					<div class="cont-button">
+						<router-link to="/ingresos" class="button">Ir a ingresos</router-link>
+					</div>
+				</div>
+			</div>
+			<div v-else>
+				<p>No tienes un plan activo.</p>
+				<button id="show-modal" @click="showModal = true">Comenzar Nuevo Plan</button>
+			</div>
+		</section>
+
+
+	</main>
+
+	<Teleport to="body">
+		<ModalPlan :show="showModal" @close="showModal = false">
+		</ModalPlan>
+	</Teleport>
+</template>
+
 <style scoped>
-main {
+main,
+section {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	gap: 1rem;
 	width: 100%;
 	height: 100vh;
 }
 
 section {
+	height: 100%;
+}
+
+.home-grid {
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	grid-template-rows: repeat(6, 1fr);
+	grid-template-columns: repeat(6, 1fr);
+	grid-template-rows: repeat(10, 1fr);
 	grid-column-gap: 1rem;
 	grid-row-gap: 1rem;
 	height: 100%;
@@ -212,14 +295,37 @@ section {
 }
 
 .div1 {
-	grid-area: 1 / 1 / 7 / 4;
+	grid-area: 1 / 1 / 4 / 4;
 }
 
-.div1 .donut {
+.div1>div {
+	display: flex;
+	flex-direction: row;
+	gap: 1.5rem;
+}
+
+.div1>div>div {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.div1>div>div>button,
+#show-modal {
+	background-color: #bbb;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+}
+
+.div1>div>div>button:last-of-type {
+	background-color: rgb(199, 51, 51);
+}
+
+.div2 .donut {
 	width: 300px;
 }
 
-.div1 .donut > p{
+.div2 .donut>p {
 	display: flex;
 	justify-content: center;
 	margin-top: 1.5rem;
@@ -227,14 +333,18 @@ section {
 }
 
 .div2 {
-	grid-area: 1 / 4 / 4 / 6;
+	grid-area: 4 / 1 / 11 / 4;
 }
 
 .div3 {
-	grid-area: 4 / 4 / 7 / 6;
+	grid-area: 1 / 4 / 6 / 7;
 }
 
-section>div {
+.div4 {
+	grid-area: 6 / 4 / 11 / 7;
+}
+
+.home-grid>div {
 	width: 100%;
 	background-color: #e4e8eb;
 	padding: 1.2rem;
@@ -245,17 +355,17 @@ section>div {
 	align-items: center;
 }
 
-section>div>h2 {
+.home-grid>div>h2 {
 	text-align: center;
 	margin-bottom: 1rem;
 }
 
-section>div>p {
+.home-grid>div>p {
 	text-align: center;
 	margin-top: 0.5rem;
 }
 
-section img {
+.home-grid img {
 	width: 100%;
 	margin-bottom: 2rem;
 }
@@ -275,14 +385,15 @@ section img {
 }
 
 @media (max-width: 900px) {
-	section {
+	.home-grid {
 		grid-template-columns: 1fr;
 		grid-template-rows: auto;
 	}
 
 	.div1,
 	.div2,
-	.div3 {
+	.div3,
+	.div4 {
 		grid-area: auto;
 		width: 100%;
 	}
@@ -293,37 +404,5 @@ svg {
 	width: 6em;
 	transform-origin: center;
 	animation: rotate4 2s linear infinite;
-}
-
-circle {
-	fill: none;
-	stroke: hsl(214, 97%, 59%);
-	stroke-width: 2;
-	stroke-dasharray: 1, 200;
-	stroke-dashoffset: 0;
-	stroke-linecap: round;
-	animation: dash4 1.5s ease-in-out infinite;
-}
-
-@keyframes rotate4 {
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
-@keyframes dash4 {
-	0% {
-		stroke-dasharray: 1, 200;
-		stroke-dashoffset: 0;
-	}
-
-	50% {
-		stroke-dasharray: 90, 200;
-		stroke-dashoffset: -35px;
-	}
-
-	100% {
-		stroke-dashoffset: -125px;
-	}
 }
 </style>
