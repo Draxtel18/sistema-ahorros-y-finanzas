@@ -13,20 +13,9 @@ export default {
             fechaInicio: "",
             fechaFin: "",
             sueldoBase: "",
-            categorias: [],
-            categoriasSeleccionadas: [],
         };
     },
     methods: {
-        async cargarCategorias() {
-            const { data, error } = await supabase.from("categorias_nuevo").select("nombre");
-
-            if (error) {
-                console.error("Error al cargar categorías:", error.message);
-            } else {
-                this.categorias = data.map((cat) => cat.nombre);
-            }
-        },
         async crearPlan() {
             if (!this.fechaInicio || !this.fechaFin || !this.sueldoBase) {
                 alert("Por favor, completa todos los campos.");
@@ -41,37 +30,18 @@ export default {
                     fecha_inicio: this.fechaInicio,
                     fecha_fin: this.fechaFin,
                     estado: "activo",
+                    created_at: new Date(),
                 }).select();
 
                 if (error) throw error;
-
-                const nuevoPlan = data[0];
-                if (this.categoriasSeleccionadas.length > 0) {
-                    await this.insertarCategorias(nuevoPlan.id_plan);
-                }
-
                 alert("Plan creado con éxito.");
                 this.$emit("close");
+                this.$emit("cargarPlanActual")
             } catch (error) {
                 console.error("Error al crear el plan:", error.message);
             }
         },
-        async insertarCategorias(idPlan) {
-            const categoriasAInsertar = this.categoriasSeleccionadas.map((cat) => ({
-                id_plan: idPlan,
-                nombre: cat,
-                tipo: "personalizada",
-            }));
-
-            const { error } = await supabase.from("categorias_nuevo").insert(categoriasAInsertar);
-            if (error) {
-                console.error("Error al insertar categorías:", error.message);
-            }
-        },
     },
-    async mounted() {
-        await this.cargarCategorias();
-    }
 }
 </script>
 
@@ -99,21 +69,13 @@ export default {
                             <label for="sueldoBase">Ingresar su Sueldo Base</label>
                             <input type="number" v-model="sueldoBase" id="sueldoBase" required />
 
-                            <label for="">Categorias del plan</label>
-                            <span>Si no se escojen categorias, los gastos seran generales</span>
-
-                            <div v-for="categoria in categorias" :key="categoria" class="categorias-check">
-                                <input type="checkbox" :value="categoria" v-model="categoriasSeleccionadas"
-                                    :id="categoria" />
-                                <label :for="categoria">{{ categoria }}</label>
-                            </div>
                         </form>
                     </slot>
                 </div>
 
                 <div class="modal-footer">
                     <slot>
-                        <button class="modal-default-button" type="submit">Confirmar</button>
+                        <button class="modal-default-button" type="submit" @click="crearPlan()">Confirmar</button>
                     </slot>
                 </div>
             </div>

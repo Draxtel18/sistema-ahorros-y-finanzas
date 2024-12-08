@@ -51,7 +51,7 @@ export default {
                 this.categoria = '';
                 this.descripcion = '';
                 this.$emit('close');
-                this.$emit('nuevoGasto');
+                this.$emit('gasto-registrado');
                 alert('Gasto registrado con éxito.');
             } catch (error) {
                 console.error('Error registrando gasto:', error.message);

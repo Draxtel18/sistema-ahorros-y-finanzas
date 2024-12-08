@@ -263,7 +263,7 @@ export default {
 	</main>
 
 	<Teleport to="body">
-		<ModalPlan :show="showModal" @close="showModal = false">
+		<ModalPlan :show="showModal" @close="showModal = false" @cargarPlanActual="cargarPlanActual">
 		</ModalPlan>
 	</Teleport>
 </template>
@@ -405,4 +405,5 @@ svg {
 	transform-origin: center;
 	animation: rotate4 2s linear infinite;
 }
+
 </style>

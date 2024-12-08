@@ -92,27 +92,28 @@ export default {
         </svg>
     </div>
     <div v-else>
-        <table>
+        <table class="tablita">
             <thead>
                 <tr>
-                    <th>Categoría</th>
-                    <th>Monto</th>
-                    <th>Descripción</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
+                    <th scope="col">Categoría</th>
+                    <th scope="col">Monto</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="gasto in gastos" :key="gasto.id">
-                    <td>{{ gasto.categoria }}</td>
+                    <th scope="row">{{ gasto.categoria }}</th>
                     <td>{{ gasto.monto }}</td>
                     <td>{{ gasto.descripcion }}</td>
                     <td>{{ new Date(gasto.fecha).toLocaleDateString() }}</td>
                     <td>
-                        <!--
-                            <button @click="openEditModal(gasto)">Editar</button>
-                        -->
                         <button @click="openEditModal(gasto)">Editar</button>
+                    </td>
+                    <td>
+
                         <button @click="deleteGasto(gasto.id)">Eliminar</button>
                     </td>
                 </tr>
@@ -132,5 +133,43 @@ div {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.tablita {
+    width: 100%;
+    height: 100%;
+}
+
+
+table {
+    width: 100%;
+    color: #6B7280;
+}
+
+thead {
+    color: #374151;
+    background-color: #F9FAFB;
+}
+
+thead>tr>th,
+tbody>tr>td,
+tbody>tr>th {
+    padding: 0.5rem 0.5rem;
+    text-align: center;
+}
+
+tbody>tr>th {
+    white-space: nowrap;
+}
+
+button {
+    background-color: #6B7280;
+    width: 100%;
+    height: 30px;
+    border-radius: 0.5rem;
+}
+
+button:hover {
+    background-color: #93919f;
 }
 </style>

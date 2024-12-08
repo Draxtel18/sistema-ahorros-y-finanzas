@@ -10,6 +10,12 @@ export default {
             showModal: false
         }
     },
+    emits: ['gasto-registrado'],
+    methods: {
+        emitirGastoRegistrado() {
+            this.$emit('gasto-registrado')
+        }
+    }
 }
 </script>
 
@@ -21,10 +27,9 @@ export default {
     </button>
 
     <Teleport to="body">
-        <modalGastos :show="showModal" @close="showModal = false">
+        <modalGastos :show="showModal" @close="showModal = false" @gasto-registrado="emitirGastoRegistrado">
         </modalGastos>
     </Teleport>
-
 </template>
 
 <style scoped>
