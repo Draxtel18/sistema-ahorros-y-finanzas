@@ -42,7 +42,7 @@ export default {
 				.select("*")
 				.eq("estado", "activo")
 				.eq("id_usuario", user.id)
-				.single();
+				.maybeSingle();
 
 
 			if (error) {
@@ -213,7 +213,6 @@ export default {
 							<p><strong>Sueldo base:</strong> {{ planActual.sueldo_base }}</p>
 						</div>
 						<div>
-							<button id="show-modal" @click="showModal = true">Comenzar Nuevo Plan</button>
 							<button @click="cancelarPlan">Cancelar Plan Actual</button>
 						</div>
 					</div>
@@ -258,7 +257,6 @@ export default {
 				<button id="show-modal" @click="showModal = true">Comenzar Nuevo Plan</button>
 			</div>
 		</section>
-
 
 	</main>
 
@@ -405,5 +403,4 @@ svg {
 	transform-origin: center;
 	animation: rotate4 2s linear infinite;
 }
-
 </style>

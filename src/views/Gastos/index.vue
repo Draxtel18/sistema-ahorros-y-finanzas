@@ -1,32 +1,83 @@
 <template>
 	<main>
-		<section>
-			<div class="div1">
-				<BotonGastos @gasto-registrado="actualizarGastos" />
+		<section v-if="loading">
+			<svg viewBox="25 25 50 50">
+				<circle r="20" cy="50" cx="50"></circle>
+			</svg>
+		</section>
+		<section v-else>
+			<div class="gastos-grid" v-if="planActual">
+				<div class="div1">
+					<BotonGastos @gasto-registrado="actualizarGastos" />
+				</div>
+				<div class="div2"> Categorias </div>
+				<div class="div3"> Grafico ultimos 6 meses </div>
+				<div class="div4">
+					<TablaGastos ref="tablaGastosRef" />
+				</div>
 			</div>
-			<div class="div2"> Categorias </div>
-			<div class="div3"> Grafico ultimos 6 meses </div>
-			<div class="div4">
-				<TablaGastos ref="tablaGastosRef" />
+			<div v-else>
+				<p>No tienes un plan activo.</p>
+				<router-link to="/">Ir a inicio</router-link>
 			</div>
 		</section>
 	</main>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import BotonGastos from './components/botonGastos.vue';
-import TablaGastos from './components/tablaGastos.vue';
+import TablaGastos from './components/tablaGastos.vue'
+import { supabase } from '@/lib/supabaseClient.js'
 
 const tablaGastosRef = ref(null)
+const loading = ref(true)
+const user = ref(null)
+const planActual = ref(null)
+
+async function fetchUser() {
+	const { data } = await supabase.auth.getUser()
+	user.value = data.user
+}
+
+async function cargarPlanActual() {
+	const { data, error } = await supabase
+		.from("planesfinanzas")
+		.select("*")
+		.eq("estado", "activo")
+		.eq("id_usuario", user.value.id)
+		.maybeSingle();
+
+	if (error) {
+		console.error("Error al cargar el plan actual:", error.message)
+		planActual.value = null
+	} else {
+		planActual.value = data
+	}
+}
 
 const actualizarGastos = () => {
 	tablaGastosRef.value.fetchGastos()
 }
+
+onMounted(async () => {
+	await fetchUser()
+	await cargarPlanActual()
+	loading.value = false
+})
+
 </script>
 
 <style scoped>
 section {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.gastos-grid {
 	height: 100%;
 	width: 100%;
 	display: grid;
@@ -36,8 +87,7 @@ section {
 	grid-row-gap: 16px;
 }
 
-section > div {
-	background-color: blue;
+.gastos-grid > div {
 	border-radius: 1rem;
 	padding: 0.6rem;
 }
