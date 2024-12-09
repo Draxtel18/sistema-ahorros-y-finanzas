@@ -32,9 +32,12 @@ export default {
                     estado: "activo",
                     created_at: new Date(),
                 }).select();
-
+                
                 if (error) throw error;
                 alert("Plan creado con éxito.");
+
+
+
                 this.$emit("close");
                 this.$emit("cargarPlanActual")
             } catch (error) {

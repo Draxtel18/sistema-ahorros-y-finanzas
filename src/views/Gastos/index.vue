@@ -8,12 +8,17 @@
 		<section v-else>
 			<div class="gastos-grid" v-if="planActual">
 				<div class="div1">
-					<BotonGastos @gasto-registrado="actualizarGastos" />
+					<BotonGastos :planActual="planActual" @gasto-registrado="actualizarGastos" />
 				</div>
-				<div class="div2"> Categorias </div>
+				<div class="div2">
+					<GraficoGastos :planActual="planActual" ref="graficoGastosRef"/>
+				</div>
+				<div class="div5">
+					<GraficoDonutGastos :planActual="planActual" ref="graficoDonutGastosRef"/>
+				</div>
 				<div class="div3"> Grafico ultimos 6 meses </div>
 				<div class="div4">
-					<TablaGastos ref="tablaGastosRef" />
+					<TablaGastos :planActual="planActual" ref="tablaGastosRef" @gasto-editado="actualizarGastos" @gasto-eliminado="actualizarGastos" />
 				</div>
 			</div>
 			<div v-else>
@@ -26,11 +31,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import BotonGastos from './components/botonGastos.vue';
+import BotonGastos from './components/botonGastos.vue'
 import TablaGastos from './components/tablaGastos.vue'
+import GraficoGastos from './components/graficoGastos.vue'
+import GraficoDonutGastos from './components/graficoDonutGastos.vue'
+
 import { supabase } from '@/lib/supabaseClient.js'
 
 const tablaGastosRef = ref(null)
+const graficoGastosRef = ref(null)
 const loading = ref(true)
 const user = ref(null)
 const planActual = ref(null)
@@ -58,7 +67,9 @@ async function cargarPlanActual() {
 
 const actualizarGastos = () => {
 	tablaGastosRef.value.fetchGastos()
+	graficoGastosRef.value.fetchGastos()
 }
+
 
 onMounted(async () => {
 	await fetchUser()
@@ -83,8 +94,8 @@ section {
 	display: grid;
 	grid-template-columns: repeat(10, 1fr);
 	grid-template-rows: repeat(11, 1fr);
-	grid-column-gap: 16px;
-	grid-row-gap: 16px;
+	grid-column-gap: 8px;
+	grid-row-gap: 8px;
 }
 
 .gastos-grid > div {
@@ -93,12 +104,18 @@ section {
 }
 
 .div1 {
-	grid-area: 1 / 1 / 3 / 6;
+	grid-area: 1 / 1 / 2 / 6;
 	background-color: #e6ddd7;
 }
 
 .div2 {
-	grid-area: 3 / 1 / 6 / 6;
+	grid-area: 2 / 1 / 6 / 4;
+	display: flex;
+	align-items: center;
+}
+
+.div5{
+	grid-area: 2 / 4 / 6 / 6;
 }
 
 .div3 {

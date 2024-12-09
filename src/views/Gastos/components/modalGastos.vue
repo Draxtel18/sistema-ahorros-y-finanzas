@@ -6,7 +6,11 @@ const { data: { user } } = await supabase.auth.getUser()
 
 export default {
     props: {
-        show: Boolean
+        show: Boolean,
+        planActual: {
+            type: Object,
+            default: null
+        },
     },
     data() {
         return {
@@ -16,6 +20,7 @@ export default {
             categorias: [],
         };
     },
+    emits: ['gasto-registrado', 'close'],
     methods: {
         async handleGasto() {
             if (!this.gasto || !this.categoria) {
@@ -23,30 +28,25 @@ export default {
                 return;
             }
 
-            const mesActual = new Date().getMonth() + 1;
-            const añoActual = new Date().getFullYear();
-
             try {
                 if (!user) return;
 
                 // Enviar datos a la tabla 'gastos'
                 const { data, error } = await supabase
-                    .from('gastos')
+                    .from('plan_gastos')
                     .insert([
                         {
-                            user_id: user.id, 
+                            id_plan: this.planActual.id_plan, 
                             monto: parseFloat(this.gasto),
-                            categoria: this.categoria,
+                            id_subcategoria: this.categoria,
                             fecha: new Date(),
                             descripcion: this.descripcion,
-                            mes: mesActual,
-                            año: añoActual,
                         },
                     ]);
 
-                if (error) throw error;
 
-                // Resetear campos y cerrar modal
+                if (error) throw error;
+                
                 this.gasto = '';
                 this.categoria = '';
                 this.descripcion = '';
@@ -61,13 +61,13 @@ export default {
             try {
                 if (!user) return;
 
-                const { data: categorias, error } = await supabase
-                    .from('categorias')
-                    .select('nombre')
+                const { data: subCategorias, error } = await supabase
+                    .from('subcategorias')
+                    .select('nombre, id_subcategoria')
 
                 if (error) throw error;
 
-                this.categorias = categorias.map(cat => cat.nombre);
+                this.subCategorias = subCategorias;
             } catch (error) {
                 console.error('Error cargando categorías:', error.message);
             }
@@ -99,8 +99,8 @@ export default {
                             <label for="cbCategoria">Ingresar categoria</label>
                             <select name="categoria" id="cbCategoria" v-model="categoria">
                                 <option disabled value="">Escoja una categoria</option>
-                                <option v-for="cat in categorias" :key="cat" :value="cat">
-                                    {{ cat }}
+                                <option v-for="subcategoria in subCategorias" :value="subcategoria.id_subcategoria">
+                                    {{ subcategoria.nombre }}
                                 </option>
                             </select>
                             <label for="ipDescripcion">Agregar Descripcion (Opcional)</label>

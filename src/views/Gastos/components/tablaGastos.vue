@@ -8,6 +8,12 @@ export default {
     components: {
         ModalEditar,
     },
+    props: {
+        planActual: {
+            type: Object,
+            default: null
+        }
+    },
     data() {
         return {
             gastos: [],
@@ -26,9 +32,9 @@ export default {
                 const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString();
 
                 const { data: gastos, error } = await supabase
-                    .from('gastos')
-                    .select('*')
-                    .eq('user_id', user.id)
+                    .from('plan_gastos')
+                    .select('*, subcategorias(nombre, id_subcategoria)')
+                    .eq('id_plan', this.planActual.id_plan)
                     .gte('fecha', firstDay)
                     .lte('fecha', lastDay);
 
@@ -39,34 +45,35 @@ export default {
                 console.error('Error cargando los gastos:', error.message);
             }
         },
-        async deleteGasto(id) {
+        async deleteGasto(id_gasto) {
             if (!confirm('¿Seguro que deseas eliminar este gasto?')) return;
 
             try {
-                const { error } = await supabase.from('gastos').delete().eq('id', id);
+                const { error } = await supabase.from('plan_gastos').delete().eq('id_gasto', id_gasto);
                 if (error) throw error;
 
-                this.gastos = this.gastos.filter(gasto => gasto.id !== id); // Actualizar lista local
+                this.gastos = this.gastos.filter(gasto => gasto.id_gasto !== id_gasto); // 
                 alert('Gasto eliminado correctamente.');
             } catch (error) {
                 console.error('Error eliminando gasto:', error.message);
             }
+            this.$emit('gasto-eliminado')
         },
         openEditModal(gasto) {
-            this.gastoEditado = { ...gasto };
+            this.gastoEditado = { ...gasto, id_subcategoria: gasto.id_subcategoria };
+            
             this.showEditModal = true;
         },
         async updateGasto(gastoEditado) {
             try {
-
                 const { error } = await supabase
-                    .from('gastos')
+                    .from('plan_gastos')
                     .update({
                         monto: gastoEditado.monto,
-                        categoria: gastoEditado.categoria,
+                        id_subcategoria: gastoEditado.id_subcategoria,
                         descripcion: gastoEditado.descripcion
                     })
-                    .eq('id', gastoEditado.id);
+                    .eq('id_gasto', gastoEditado.id_gasto);
 
                 if (error) throw error;
                 this.showEditModal = false;
@@ -76,6 +83,7 @@ export default {
             } catch (error) {
                 console.error('Error actualizando gasto:', error.message);
             }
+            this.$emit('gasto-editado')
         },
     },
     async mounted() {
@@ -105,7 +113,7 @@ export default {
             </thead>
             <tbody>
                 <tr v-for="gasto in gastos" :key="gasto.id">
-                    <th scope="row">{{ gasto.categoria }}</th>
+                    <th scope="row">{{ gasto.subcategorias.nombre }}</th>
                     <td>{{ gasto.monto }}</td>
                     <td>{{ gasto.descripcion }}</td>
                     <td>{{ new Date(gasto.fecha).toLocaleDateString() }}</td>
@@ -113,13 +121,11 @@ export default {
                         <button @click="openEditModal(gasto)">Editar</button>
                     </td>
                     <td>
-
-                        <button @click="deleteGasto(gasto.id)">Eliminar</button>
+                        <button @click="deleteGasto(gasto.id_gasto)">Eliminar</button>
                     </td>
                 </tr>
             </tbody>
         </table>
-
         <Teleport to="body">
             <ModalEditar v-if="showEditModal" :show="showEditModal" :gasto="gastoEditado" @close="showEditModal = false" @save="updateGasto">
             </ModalEditar>

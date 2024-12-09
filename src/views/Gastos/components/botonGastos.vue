@@ -5,6 +5,12 @@ export default {
     components: {
         modalGastos,
     },
+    props: {
+        planActual: {
+            type: Object,
+            default: null
+        },
+    },
     data() {
         return {
             showModal: false
@@ -27,7 +33,7 @@ export default {
     </button>
 
     <Teleport to="body">
-        <modalGastos :show="showModal" @close="showModal = false" @gasto-registrado="emitirGastoRegistrado">
+        <modalGastos :planActual="planActual" :show="showModal" @close="showModal = false" @gasto-registrado="emitirGastoRegistrado">
         </modalGastos>
     </Teleport>
 </template>

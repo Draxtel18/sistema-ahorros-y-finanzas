@@ -11,27 +11,29 @@ export default {
     data() {
         return {
             monto: this.gasto.monto,
-            categoria: this.gasto.categoria,
+            categoria: this.gasto.id_subcategoria,
             descripcion: this.gasto.descripcion,
             categorias: [],
         };
     },
     methods: {
         saveChanges() {
-            this.$emit('save', { ...this.gasto, monto: this.monto, categoria: this.categoria, descripcion: this.descripcion });
+            this.$emit('save', { ...this.gasto, monto: this.monto, id_subcategoria: this.categoria, descripcion: this.descripcion });
             this.$emit('close');
+            console.log(this.categoria);
+            
         },
         async fetchCategorias() {
             try {
                 if (!user) return;
 
                 const { data: categorias, error } = await supabase
-                    .from('categorias')
-                    .select('nombre')
+                    .from('subcategorias')
+                    .select('nombre, id_subcategoria')
 
                 if (error) throw error;
 
-                this.categorias = categorias.map(cat => cat.nombre);
+                this.categorias = categorias;
             } catch (error) {
                 console.error('Error cargando categorías:', error.message);
             }
@@ -64,11 +66,10 @@ export default {
                             <label for="cbCategoria">Categoría</label>
                             <select v-model="categoria" id="cbCategoria">
                                 <option disabled value="">Seleccione una categoría</option>
-                                <option v-for="cat in categorias" :key="cat" :value="cat">
-                                    {{ cat }}
+                                <option v-for="cat in categorias" :key="cat.id_subcategoria" :value="cat.id_subcategoria">
+                                    {{ cat.nombre }}
                                 </option>
                             </select>
-
                             <label for="ipDescripcion">Descripción (Opcional)</label>
                             <textarea v-model="descripcion" id="ipDescripcion" placeholder="Máximo 100 caracteres"
                                 maxlength="100"></textarea>
