@@ -22,6 +22,12 @@ export default {
     methods: {
         async fetchGastos() {
             try {
+                const { data: gastos, error: gastosError } = await supabase
+					.from('plan_gastos')
+					.select('monto')
+					.eq('id_plan', this.planActual.id_plan)
+				if (gastosError) throw error;
+
             } catch (error) {
                 console.error('Error al obtener gastos:', error);
             }

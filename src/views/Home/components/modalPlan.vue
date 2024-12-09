@@ -34,9 +34,14 @@ export default {
                 }).select();
                 
                 if (error) throw error;
+
+                await this.guardarSalario(data[0].id_plan);
+
+                console.log(data);
+                console.log(data[0].id_plan);
+                
+                
                 alert("Plan creado con éxito.");
-
-
 
                 this.$emit("close");
                 this.$emit("cargarPlanActual")
@@ -44,6 +49,21 @@ export default {
                 console.error("Error al crear el plan:", error.message);
             }
         },
+        async guardarSalario(idPlan){
+            try{
+                const { data, error} = await supabase
+                .from("plan_ingresos").insert({
+                    id_plan: idPlan,
+                    monto: this.sueldoBase,
+                    fecha: new Date().toISOString().slice(0, 10),
+                    descripcion: 'Sueldo del mes',
+                    tipo: 'salario',
+                });
+                if(error) throw error;
+            }catch(error){
+                console.error("Error al guardar el sueldo base:", error.message);
+            }
+        }
     },
 }
 </script>
