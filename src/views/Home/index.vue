@@ -14,44 +14,36 @@ const { data: { user } } = await supabase.auth.getUser()
 
 export default {
 	components: {
-		/*
-		DonutChart,
-		LineChart,
-		BarChart,
-		*/
 		ModalPlan,
 	},
 	data() {
 		return {
-			/*
-			gastosData: null,
-			ahorrosData: null,
-			ingresosData: null,
-			gastado: null,
-			total: null,
-			*/
 			planActual: null,
 			loading: true,
 			showModal: false,
 		};
 	},
 	methods: {
-		async cargarPlanActual() {
-			const { data, error } = await supabase
-				.from("planesfinanzas")
-				.select("*")
-				.eq("estado", "activo")
-				.eq("id_usuario", user.id)
-				.maybeSingle();
+        async cargarPlanActual() {
+            try {
+                const { data, error } = await supabase
+                    .from("planesfinanzas")
+                    .select("*")
+                    .eq("estado", "activo")
+                    .eq("id_usuario", user.id)
+                    .limit(1)
+					.single();
 
+                if (error) throw error;
 
-			if (error) {
-				console.error("Error al cargar el plan actual:", error.message);
-				this.planActual = null;
-			} else {
-				this.planActual = data;
-			}
-		},
+                this.planActual = data || null;
+            } catch (error) {
+                console.error("Error al cargar el plan actual:", error.message);
+            } finally {
+                this.loading = false;
+            }
+        },
+
 		async cancelarPlan() {
 			if (confirm("¿Estás seguro de cancelar el plan actual?")) {
 				const { error } = await supabase
@@ -67,127 +59,9 @@ export default {
 				}
 			}
 		},
-		/*
-		async fetchGastos() {
-			const mesActual = new Date().getMonth() + 1;
-			const añoActual = new Date().getFullYear();
-
-			try {
-				const { data: gastos, error: gastosError } = await supabase
-					.from('gastos')
-					.select('monto')
-					.eq('mes', mesActual)
-					.eq('año', añoActual)
-					.eq('user_id', user.id);
-				if (gastosError) throw error;
-
-				const { data: ingresos, error: ingresosError } = await supabase
-					.from('ingresos_2')
-					.select('monto')
-					.eq('mes', mesActual)
-					.eq('año', añoActual)
-					.eq('user_id', user.id);
-				if (ingresosError) throw error;
-
-				const gastado = gastos.reduce((acc, item) => acc + item.monto, 0);
-				const disponible = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0) - gastado;
-				const presupuesto = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0)
-
-				this.gastado = gastado;
-				this.total = presupuesto;
-
-				this.gastosData = {
-					labels: ['Gastado', 'Disponible'],
-					datasets: [
-						{
-							data: [gastado, disponible],
-							backgroundColor: ['#8A3', '#BBB'],
-							borderColor: ['transparent']
-						},
-					],
-				};
-			} catch (error) {
-				console.error('Error al cargar los datos de gastos:', error.message);
-			}
-		},
-		async fetchAhorros() {
-			try {
-				const meses = this.getUltimos6Meses();
-
-				const { data: ahorros, error } = await supabase
-					.from('ahorros')
-					.select('monto, mes')
-					.eq('user_id', user.id);
-				if (error) throw error;
-
-				const datosAhorros = meses.map(mes =>
-					ahorros.find(a => a.mes === mes) ? ahorros.find(a => a.mes === mes).monto : null
-				);
-
-				this.ahorrosData = {
-					labels: meses.map(m => this.getNombreMes(m)),
-					datasets: [
-						{
-							label: 'Ahorros',
-							backgroundColor: '#36A2EB',
-							data: datosAhorros
-						}
-					]
-				};
-			} catch (error) {
-				console.error('Error cargando datos de ahorros:', error.message);
-			}
-		},
-		async fetchIngresos() {
-			try {
-				const meses = this.getUltimos6Meses();
-				const { data: ingresos, error } = await supabase
-					.from('ingresos_2')
-					.select('monto, mes')
-					.eq('user_id', user.id)
-					.eq('fuente', 'Extra');
-				if (error) throw error;
-
-				const datosIngresos = meses.map(mes => {
-					const ingresosMes = ingresos.filter(i => i.mes === mes);
-					return ingresosMes.length > 0
-						? ingresosMes.reduce((suma, ingreso) => suma + ingreso.monto, 0)
-						: null;
-				});
-
-				this.ingresosData = {
-					labels: meses.map(m => this.getNombreMes(m)),
-					datasets: [
-						{
-							label: 'Ingresos',
-							backgroundColor: '#FF6384',
-							data: datosIngresos
-						}
-					]
-				};
-			} catch (error) {
-				console.error('Error cargando datos de ingresos:', error.message);
-			}
-		},
-		getUltimos6Meses() {
-			const mesActual = new Date().getMonth() + 1;
-			return Array.from({ length: 6 }, (_, i) => ((mesActual - i - 1 + 12) % 12) + 1).reverse();
-		},
-		getNombreMes(mes) {
-			const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-			return nombresMeses[mes - 1];
-		},
-		*/
+		
 	},
 	async mounted() {
-		/*
-		await Promise.all([
-			this.fetchGastos(),
-			this.fetchAhorros(),
-			this.fetchIngresos(),
-		]);
-		this.gastado;
-		*/
 		await this.cargarPlanActual();
 		this.loading = false;
 		this.presupuesto;

@@ -17,34 +17,87 @@ export default {
     },
     methods: {
         async crearPlan() {
-            if (!this.fechaInicio || !this.fechaFin || !this.sueldoBase) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
+            
+    if (!this.fechaInicio || !this.fechaFin || !this.sueldoBase) {
+        alert("Por favor, completa todos los campos.");
+        return;
+    }
 
-            try {
-                const { data, error } = await supabase
-                .from("planesfinanzas").insert({
-                    id_usuario: user.id,    
-                    sueldo_base: parseFloat(this.sueldoBase),
-                    fecha_inicio: this.fechaInicio,
-                    fecha_fin: this.fechaFin,
-                    estado: "activo",
-                    created_at: new Date(),
-                }).select();
-                
-                if (error) throw error;
-                alert("Plan creado con éxito.");
+    try {
+        // Crear el plan
+        const { data: plan, error: errorPlan } = await supabase
+            .from("planesfinanzas")
+            .insert({
+                id_usuario: user.id,
+                sueldo_base: parseFloat(this.sueldoBase),
+                fecha_inicio: this.fechaInicio,
+                fecha_fin: this.fechaFin,
+                estado: "activo",
+                created_at: new Date(),
+            })
+            .select()
+            .single();
+
+        if (errorPlan) throw new Error(`Error al crear el plan: ${errorPlan.message}`);
+
+        // Calcular la distribución
+        const sueldoBase = parseFloat(this.sueldoBase);
+        const necesidades = sueldoBase * 0.5;
+        const gustos = sueldoBase * 0.3;
+        const ahorros = sueldoBase * 0.2;
+
+        // Depuración: Imprime los datos antes de insertar
+        console.log("Datos a insertar en distribucionpresupuesto:", {
+            id_plan: plan.id_plan,
+            dinerototal: sueldoBase,
+            necesidades: necesidades,
+            gustos: gustos,
+            ahorros: ahorros,
+        });
+
+        // Insertar distribución
+        const { error: errorDistribucion } = await supabase
+            .from("distribucionpresupuesto")
+            .insert({
+                id_plan: plan.id_plan,
+                dinerototal: sueldoBase,
+                necesidades: necesidades,
+                gustos: gustos,
+                ahorros: ahorros,
+            });
+
+        if (errorDistribucion) {
+            console.error("Error en la distribución:", errorDistribucion.message);
+            throw new Error("Error al guardar la distribución del presupuesto");
+        }
+
+        // Registrar ingreso
+        const { error: errorIngreso } = await supabase
+            .from("plan_ingresos")
+            .insert({
+                id_plan: plan.id_plan,
+                monto: sueldoBase,
+                fecha: this.fechaInicio,
+                descripcion: "Sueldo del mes",
+                tipo: "salario",
+            });
+
+        if (errorIngreso) {
+            console.error("Error en el ingreso:", errorIngreso.message);
+            throw new Error("Error al registrar el ingreso en plan_ingresos");
+        }
+
+        alert("Plan creado con éxito.");
+        this.$emit("close");
+        this.$emit("cargarPlanActual");
+    } catch (error) {
+        console.error("Error al crear el plan:", error.message);
+        alert("Ocurrió un error al crear el plan. Intenta nuevamente.");
+    }
 
 
-
-                this.$emit("close");
-                this.$emit("cargarPlanActual")
-            } catch (error) {
-                console.error("Error al crear el plan:", error.message);
-            }
         },
-    },
+    }
 }
 </script>
 
