@@ -40,14 +40,12 @@ export default {
 
                 if (errorPlan) throw new Error(`Error al crear el plan: ${errorPlan.message}`);
                 
-
                 // Calcular la distribución
                 const sueldoBase = parseFloat(this.sueldoBase);
                 const necesidades = sueldoBase * 0.5;
                 const gustos = sueldoBase * 0.3;
                 const ahorros = sueldoBase * 0.2;
-
-                // Depuración: Imprime los datos antes de insertar
+                
                 console.log("Datos a insertar en distribucionpresupuesto:", {
                     id_plan: plan.id_plan,
                     dinerototal: sueldoBase,
@@ -78,7 +76,7 @@ export default {
                     .insert({
                         id_plan: plan.id_plan,
                         monto: sueldoBase,
-                        fecha: this.fechaInicio,
+                        fecha: new Date(),
                         descripcion: "Sueldo del mes",
                         tipo: "salario",
                     });
@@ -98,9 +96,7 @@ export default {
                 alert("Ocurrió un error al crear el plan. Intenta nuevamente.");
             }
 
-
         },
-        
         
     },
 }

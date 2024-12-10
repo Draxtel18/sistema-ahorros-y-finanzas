@@ -16,7 +16,9 @@
 				<div class="div5">
 					<GraficoDonutGastos :planActual="planActual" ref="graficoDonutGastosRef"/>
 				</div>
-				<div class="div3"> Grafico ultimos 6 meses </div>
+				<div class="div3">
+					<GraficoUltimos :planActual="planActual" ref="graficoUltimosRef"/>
+				</div>
 				<div class="div4">
 					<TablaGastos :planActual="planActual" ref="tablaGastosRef" @gasto-editado="actualizarGastos" @gasto-eliminado="actualizarGastos" />
 				</div>
@@ -35,6 +37,7 @@ import BotonGastos from './components/botonGastos.vue'
 import TablaGastos from './components/tablaGastos.vue'
 import GraficoGastos from './components/graficoGastos.vue'
 import GraficoDonutGastos from './components/graficoDonutGastos.vue'
+import GraficoUltimos from './components/graficoUltimos.vue'
 
 import { supabase } from '@/lib/supabaseClient.js'
 
@@ -68,6 +71,7 @@ async function cargarPlanActual() {
 const actualizarGastos = () => {
 	tablaGastosRef.value.fetchGastos()
 	graficoGastosRef.value.fetchGastos()
+	graficoUltimos.value.fetchGastos()
 }
 
 
@@ -116,10 +120,17 @@ section {
 
 .div5{
 	grid-area: 2 / 4 / 6 / 6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .div3 {
 	grid-area: 1 / 6 / 6 / 11;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem;
 }
 
 .div4 {
@@ -127,4 +138,21 @@ section {
 	background-color: transparent;
 	border: 1px solid #6B7280;
 }
+
+@media (max-width: 900px) {
+	.gastos-grid {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+	}
+
+	.div1,
+	.div2,
+	.div3,
+	.div4,
+	.div5 {
+		grid-area: auto;
+		width: 100%;
+	}
+}
+
 </style>

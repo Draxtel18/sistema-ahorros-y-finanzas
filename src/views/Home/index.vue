@@ -32,7 +32,7 @@ export default {
                     .eq("estado", "activo")
                     .eq("id_usuario", user.id)
                     .limit(1)
-					.single();
+					.maybeSingle();
 
                 if (error) throw error;
 

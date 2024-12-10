@@ -17,6 +17,9 @@ export default {
         return {
             gastosDonutData: null,
             loading: true,
+            ingresosData: null,
+			gastado: null,
+			total: null,
         }
     },
     methods: {
@@ -28,6 +31,31 @@ export default {
 					.eq('id_plan', this.planActual.id_plan)
 				if (gastosError) throw error;
 
+                const { data: ingresos, error: ingresosError } = await supabase
+					.from('plan_ingresos')
+					.select('monto')
+					.eq('id_plan', this.planActual.id_plan);
+				if (ingresosError) throw error;                
+
+                const gastado = gastos.reduce((acc, item) => acc + item.monto, 0);
+				const disponible = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0) - gastado;
+				const presupuesto = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0)
+
+                this.gastado = gastado;
+				this.total = presupuesto;
+
+                this.gastosDonutData = {
+					labels: ['Gastado', 'Disponible'],
+					datasets: [
+						{
+							data: [gastado, disponible],
+							backgroundColor: ['#8A3', '#BBB'],
+							borderColor: ['transparent']
+						},
+					],
+				};
+                
+                
             } catch (error) {
                 console.error('Error al obtener gastos:', error);
             }
@@ -41,5 +69,21 @@ export default {
 </script>
 
 <template>
-    <DonutChart v-if="gastosDonutData" :data="gastosDonutData"/>
+    <div class="donita">
+        <DonutChart v-if="gastosDonutData" :data="gastosDonutData"/>
+        <p>{{ gastado }} de {{ total }}</p>
+    </div>
 </template>
+
+<style scoped>
+.donita{
+    width: 100%;
+    padding: 3rem;
+}
+.donita > p {
+	display: flex;
+	justify-content: center;
+	margin-top: 1.5rem;
+    color: #6B7280;
+}
+</style>
