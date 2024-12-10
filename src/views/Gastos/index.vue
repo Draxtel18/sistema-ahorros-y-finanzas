@@ -71,7 +71,7 @@ async function cargarPlanActual() {
 const actualizarGastos = () => {
 	tablaGastosRef.value.fetchGastos()
 	graficoGastosRef.value.fetchGastos()
-	graficoUltimos.value.fetchGastos()
+	graficoUltimosRef.value.fetchGastos()
 }
 
 

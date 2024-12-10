@@ -1,37 +1,49 @@
-<script>
-import { supabase } from '@/lib/supabaseClient.js';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { supabase } from '@/lib/supabaseClient.js'
+import TablaIngresos from './components/tablaIngresos.vue';
+import BotonIngresos from './components/botonIngresos.vue';
+import GraficoUltimosIngresos from './components/graficoUltimosIngresos.vue';
 
-const { data: { user } } = await supabase.auth.getUser()
+const tablaIngresosRef = ref(null)
+const graficoUltimosRef = ref(null)
+const loading = ref(true)
+const user = ref(null)
+const planActual = ref(null)
 
-export default {
-	data() {
-		return {
-			planActual: null,
-			loading: true,
-		}
-	},
-	methods: {
-		async cargarPlanActual() {
-			const { data, error } = await supabase
-				.from("planesfinanzas")
-				.select("*")
-				.eq("estado", "activo")
-				.eq("id_usuario", user.id)
-				.maybeSingle();
+async function fetchUser() {
+	const { data } = await supabase.auth.getUser()
+	user.value = data.user
+}
 
-			if (error) {
-				console.error("Error al cargar el plan actual:", error.message);
-				this.planActual = null;
-			} else {
-				this.planActual = data;
-			}
-		},
-	},
-	async mounted() {
-		await this.cargarPlanActual();
-		this.loading = false;
+async function cargarPlanActual() {
+	const { data, error } = await supabase
+		.from("planesfinanzas")
+		.select("*")
+		.eq("estado", "activo")
+		.eq("id_usuario", user.value.id)
+		.maybeSingle();
+
+	if (error) {
+		console.error("Error al cargar el plan actual:", error.message)
+		planActual.value = null
+	} else {
+		planActual.value = data
 	}
 }
+
+const actualizarGastos = () => {
+	tablaIngresosRef.value.fetchIngreso()
+	graficoUltimosRef.value.fetchIngreso()
+}
+
+
+onMounted(async () => {
+	await fetchUser()
+	await cargarPlanActual()
+	loading.value = false
+})
+
 </script>
 
 <template>
@@ -43,10 +55,16 @@ export default {
 		</section>
 		<section v-else>
 			<div class="ingresos-grid" v-if="planActual">
-				<div class="div1"> Ingresos </div>
+				<div class="div1">
+					<BotonIngresos :planActual="planActual" @ingreso-registrado="actualizarGastos" />
+				</div>
 				<div class="div2"> Hola </div>
-				<div class="div3"> Hola </div>
-				<div class="div4"> Hola </div>
+				<div class="div3">
+					<GraficoUltimosIngresos :planActual="planActual" ref="graficoUltimosRef"/>
+				</div>
+				<div class="div4">
+					<TablaIngresos :planActual="planActual" ref="tablaIngresosRef" @ingreso-editado="actualizarGastos" @ingreso-eliminado="actualizarGastos" />
+				</div>
 			</div>
 			<div v-else>
 				<p>No tienes un plan activo.</p>
@@ -78,13 +96,13 @@ section {
 }
 
 .ingresos-grid > div {
-	background-color: blue;
 	border-radius: 1rem;
 	padding: 0.6rem;
 }
 
 .div1 {
 	grid-area: 1 / 1 / 3 / 6;
+	background-color: #e6ddd7;
 }
 
 .div2 {
@@ -97,5 +115,7 @@ section {
 
 .div4 {
 	grid-area: 6 / 1 / 12 / 11;
+	background-color: transparent;
+	border: 1px solid #6B7280;
 }
 </style>
