@@ -17,7 +17,7 @@ export default {
 		GraficoUltimosIngresos,
 		GraficoUltimos,
 		GraficoDonutGastosHome,
-    	GraficoDonutAhorrosHome,
+		GraficoDonutAhorrosHome,
 	},
 	data() {
 		return {
@@ -30,7 +30,7 @@ export default {
 		async cargarPlanActual() {
 			try {
 				const { data: { user } } = await supabase.auth.getUser()
-                if (!user) return;
+				if (!user) return;
 
 				const { data, error } = await supabase
 					.from("planesfinanzas")
@@ -100,37 +100,31 @@ export default {
 					</div>
 				</div>
 				<div class="div2">
-					<h2>Gastos</h2>
-					<div class="donut">
-						<graficoDonutGastosHome :planActual="planActual" />
-						<!--
-							<DonutChart v-if="gastosData" :data="gastosData" />
-							<p>Has gastado {{ gastado }} de {{ total }} </p>
-						s-->
-					</div>
-					<div class="cont-button">
-						<router-link to="/gastos" class="button">Ir a gastos</router-link>
+					<div>
+						<h2>Gastos</h2>
+						<div class="donut">
+							<graficoDonutGastosHome :planActual="planActual" />
+						</div>
+						<div class="cont-button">
+							<router-link to="/gastos" class="button">Ir a gastos</router-link>
+						</div>
 					</div>
 				</div>
 				<div class="div3">
-					<h2>Ahorros</h2>
-					<graficoDonutAhorrosHome :planActual="planActual" />
 					<div>
-						<!--
-							<LineChart v-if="ahorrosData" :data="ahorrosData" />
-						-->
-					</div>
-					<div class="cont-button">
-						<router-link to="/ahorros" class="button">Ir a ahorros</router-link>
+						<h2>Ahorros</h2>
+						<div class="donut">
+							<graficoDonutAhorrosHome :planActual="planActual" />
+						</div>
+						<div class="cont-button">
+							<router-link to="/ahorros" class="button">Ir a ahorros</router-link>
+						</div>
 					</div>
 				</div>
 				<div class="div4">
 					<h2>Ingresos (Ult. 6 meses)</h2>
 					<div>
-						<!--
-							<BarChart v-if="ingresosData" :data="ingresosData" />
-						-->
-						<GraficoUltimosIngresos :planActual="planActual" ref="graficoUltimosRef"/>
+						<GraficoUltimosIngresos :planActual="planActual" ref="graficoUltimosRef" />
 					</div>
 					<div class="cont-button">
 						<router-link to="/ingresos" class="button">Ir a ingresos</router-link>
@@ -227,8 +221,17 @@ section {
 	background-color: rgb(199, 51, 51);
 }
 
+.div2>div {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
 .div2 .donut {
-	width: 300px;
+	max-width: 200px;
 }
 
 .div2 .donut>p {
@@ -244,6 +247,26 @@ section {
 
 .div3 {
 	grid-area: 1 / 5 / 6 / 8;
+}
+
+.div3>div {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap:1rem;
+}
+
+.div3 .donut {
+	max-width: 100px;
+}
+
+.div3 .donut>p {
+	display: flex;
+	justify-content: center;
+	margin-top: 1.5rem;
+	font-size: 1.1rem;
 }
 
 .div4 {
@@ -271,15 +294,9 @@ section {
 	margin-top: 0.5rem;
 }
 
-.home-grid img {
-	width: 100%;
-	margin-bottom: 2rem;
-}
-
 .cont-button {
 	display: flex;
 	justify-content: center;
-	margin-top: 1.5rem;
 }
 
 .button {

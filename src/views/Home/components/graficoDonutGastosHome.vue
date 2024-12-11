@@ -81,6 +81,14 @@ export default {
   width: 100%;
   padding: 2rem;
 }
+
+.donita > div{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
 .donita > p {
   display: flex;
   justify-content: center;

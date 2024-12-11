@@ -60,7 +60,7 @@ export default {
 
 
 <template>
-    <LineChart v-if="ingresoUltimos" :data="ingresoUltimos" />
+    <LineChart v-if="ahorroUltimos" :data="ahorroUltimos" />
 </template>
 
 <style scoped></style>

@@ -29,9 +29,14 @@ export default {
           .eq('id_plan', this.planActual.id_plan)
           .single();
 
+          console.log(distribucion);
+          
+
         if (error) throw error;
 
         this.totalAhorros = distribucion.ahorros;
+
+        this.ahorrado = distribucion.ahorros;
 
         // Crear datos para el gráfico
         this.ahorrosDonutData = {
@@ -53,6 +58,7 @@ export default {
   },
   async mounted() {
     await this.fetchDistribucion();
+    this.ahorrado;
   },
 };
 </script>
@@ -69,9 +75,18 @@ export default {
 
 <style scoped>
 .donita {
-  width:35%;
-  padding: 2rem;
+  width: 100%;
+  
 }
+
+.donita > div{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+
 .donita > p {
   display: flex;
   justify-content: center;

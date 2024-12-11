@@ -37,6 +37,9 @@ export default {
                     .gte('fecha', firstDay)
                     .lte('fecha', lastDay);
 
+                    console.log(gastos);
+                    
+
                 if (error) throw error;
 
                 this.gastos = gastos;

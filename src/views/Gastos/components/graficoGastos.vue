@@ -30,6 +30,9 @@ export default {
                     .eq('id_plan', this.planActual.id_plan)
                     .in('subcategorias.id_categoria', [1, 2])
 
+                    console.log(gastos);
+                    
+
                 if (error) throw error;
 
                 // Agrupar gastos por categoría
@@ -38,6 +41,9 @@ export default {
                     acc[categoria] = (acc[categoria] || 0) + gasto.monto;
                     return acc;
                 }, {});
+
+                console.log(gastosPorCategoria);
+                
 
                 // Obtener nombres de categorías
                 const { data: categorias } = await supabase

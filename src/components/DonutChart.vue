@@ -4,6 +4,12 @@
     </div>
 </template>
 
+<style scoped>
+    .donut{
+        width: 100%;
+    }
+</style>
+
 <script>
 import { Doughnut } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
