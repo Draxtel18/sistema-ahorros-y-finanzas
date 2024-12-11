@@ -4,9 +4,11 @@ import { supabase } from '@/lib/supabaseClient.js'
 import TablaIngresos from './components/tablaIngresos.vue';
 import BotonIngresos from './components/botonIngresos.vue';
 import GraficoUltimosIngresos from './components/graficoUltimosIngresos.vue';
+import PromedioIngresos from './components/promedioIngresos.vue';
 
 const tablaIngresosRef = ref(null)
 const graficoUltimosRef = ref(null)
+const promedioIngresosRef = ref(null)
 const loading = ref(true)
 const user = ref(null)
 const planActual = ref(null)
@@ -35,6 +37,7 @@ async function cargarPlanActual() {
 const actualizarGastos = () => {
 	tablaIngresosRef.value.fetchIngreso()
 	graficoUltimosRef.value.fetchIngreso()
+	promedioIngresosRef.value.fetchIngreso()
 }
 
 
@@ -58,7 +61,9 @@ onMounted(async () => {
 				<div class="div1">
 					<BotonIngresos :planActual="planActual" @ingreso-registrado="actualizarGastos" />
 				</div>
-				<div class="div2"> Hola </div>
+				<div class="div2">
+					<PromedioIngresos :planActual="planActual" ref="promedioIngresosRef"/>
+				</div>
 				<div class="div3">
 					<GraficoUltimosIngresos :planActual="planActual" ref="graficoUltimosRef"/>
 				</div>
@@ -107,15 +112,36 @@ section {
 
 .div2 {
 	grid-area: 3 / 1 / 6 / 6;
+	padding: 0 !important;
 }
 
 .div3 {
 	grid-area: 1 / 6 / 6 / 11;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .div4 {
 	grid-area: 6 / 1 / 12 / 11;
 	background-color: transparent;
 	border: 1px solid #6B7280;
+}
+
+
+@media (max-width: 900px) {
+	.ingresos-grid {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+	}
+
+	.div1,
+	.div2,
+	.div3,
+	.div4 {
+		grid-area: auto;
+		width: 100%;
+		height: fit-content;
+	}
 }
 </style>

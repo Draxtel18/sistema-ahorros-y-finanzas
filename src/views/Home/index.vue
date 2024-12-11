@@ -5,16 +5,17 @@ import LineChart from '@/components/LineChart.vue';
 import BarChart from '@/components/BarChart.vue';
 */
 import ModalPlan from './components/modalPlan.vue';
-
-
+import GraficoUltimosIngresos from '../Ingresos/components/graficoUltimosIngresos.vue';
 import { supabase } from '@/lib/supabaseClient.js';
+import GraficoUltimos from '../Gastos/components/graficoUltimos.vue';
 
 const { data: { user } } = await supabase.auth.getUser()
-
 
 export default {
 	components: {
 		ModalPlan,
+		GraficoUltimosIngresos,
+		GraficoUltimos
 	},
 	data() {
 		return {
@@ -24,25 +25,25 @@ export default {
 		};
 	},
 	methods: {
-        async cargarPlanActual() {
-            try {
-                const { data, error } = await supabase
-                    .from("planesfinanzas")
-                    .select("*")
-                    .eq("estado", "activo")
-                    .eq("id_usuario", user.id)
-                    .limit(1)
+		async cargarPlanActual() {
+			try {
+				const { data, error } = await supabase
+					.from("planesfinanzas")
+					.select("*")
+					.eq("estado", "activo")
+					.eq("id_usuario", user.id)
+					.limit(1)
 					.maybeSingle();
 
-                if (error) throw error;
+				if (error) throw error;
 
-                this.planActual = data || null;
-            } catch (error) {
-                console.error("Error al cargar el plan actual:", error.message);
-            } finally {
-                this.loading = false;
-            }
-        },
+				this.planActual = data || null;
+			} catch (error) {
+				console.error("Error al cargar el plan actual:", error.message);
+			} finally {
+				this.loading = false;
+			}
+		},
 
 		async cancelarPlan() {
 			if (confirm("¿Estás seguro de cancelar el plan actual?")) {
@@ -59,7 +60,7 @@ export default {
 				}
 			}
 		},
-		
+
 	},
 	async mounted() {
 		await this.cargarPlanActual();
@@ -78,16 +79,18 @@ export default {
 		</div>
 		<section v-else>
 			<div class="home-grid" v-if="planActual">
-				<div class="div1">
-					<h2>Plan Actual</h2>
-					<div>
+				<div class="div1 card">
+					<div class="card__content">
+						<h2>Plan Actual</h2>
 						<div>
-							<p><strong>Fecha de inicio:</strong> {{ planActual.fecha_inicio }}</p>
-							<p><strong>Fecha de fin:</strong> {{ planActual.fecha_fin }}</p>
-							<p><strong>Sueldo base:</strong> {{ planActual.sueldo_base }}</p>
-						</div>
-						<div>
-							<button @click="cancelarPlan">Cancelar Plan Actual</button>
+							<div>
+								<p><strong>Fecha de inicio:</strong> {{ planActual.fecha_inicio }}</p>
+								<p><strong>Fecha de fin:</strong> {{ planActual.fecha_fin }}</p>
+								<p><strong>Sueldo base:</strong> {{ planActual.sueldo_base }}</p>
+							</div>
+							<div>
+								<button @click="cancelarPlan">Cancelar Plan Actual</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -115,11 +118,12 @@ export default {
 					</div>
 				</div>
 				<div class="div4">
-					<h2>Ingresos Extras</h2>
+					<h2>Ingresos (Ult. 6 meses)</h2>
 					<div>
 						<!--
 							<BarChart v-if="ingresosData" :data="ingresosData" />
 						-->
+						<GraficoUltimosIngresos :planActual="planActual" ref="graficoUltimosRef"/>
 					</div>
 					<div class="cont-button">
 						<router-link to="/ingresos" class="button">Ir a ingresos</router-link>
@@ -141,6 +145,26 @@ export default {
 </template>
 
 <style scoped>
+.card {
+	width: 100%;
+	height: 100%;
+	border-radius: 20px;
+	padding: 5px;
+	box-shadow: rgba(44, 184, 158, 0.2) 0 15px 30px -5px;
+	background-image: linear-gradient(144deg, #049020, #26a172 50%, #35d8c5);
+}
+
+.card__content {
+	background: rgb(167, 225, 209);
+	border-radius: 17px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
 main,
 section {
 	display: flex;
@@ -158,7 +182,7 @@ section {
 
 .home-grid {
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
+	grid-template-columns: repeat(7, 1fr);
 	grid-template-rows: repeat(10, 1fr);
 	grid-column-gap: 1rem;
 	grid-row-gap: 1rem;
@@ -167,29 +191,32 @@ section {
 }
 
 .div1 {
-	grid-area: 1 / 1 / 4 / 4;
+	grid-area: 1 / 1 / 5 / 5;
 }
 
-.div1>div {
+.card__content>div {
 	display: flex;
 	flex-direction: row;
-	gap: 1.5rem;
+	justify-content: space-between;
+	gap: 2rem;
+	margin-top: 1.2rem;
 }
 
-.div1>div>div {
+.card__content>div>div {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	gap: 1rem;
 }
 
-.div1>div>div>button,
+.card__content>div>div>button,
 #show-modal {
 	background-color: #bbb;
 	padding: 0.5rem 1rem;
 	border-radius: 0.5rem;
 }
 
-.div1>div>div>button:last-of-type {
+.card__content>div>div>button:last-of-type {
 	background-color: rgb(199, 51, 51);
 }
 
@@ -205,15 +232,15 @@ section {
 }
 
 .div2 {
-	grid-area: 4 / 1 / 11 / 4;
+	grid-area: 5 / 1 / 12 / 5;
 }
 
 .div3 {
-	grid-area: 1 / 4 / 6 / 7;
+	grid-area: 1 / 5 / 6 / 8;
 }
 
 .div4 {
-	grid-area: 6 / 4 / 11 / 7;
+	grid-area: 6 / 5 / 12 / 8;
 }
 
 .home-grid>div {
