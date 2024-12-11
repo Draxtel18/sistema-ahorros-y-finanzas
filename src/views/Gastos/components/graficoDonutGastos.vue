@@ -36,12 +36,12 @@ export default {
 					.eq('id_plan', this.planActual.id_plan);
 				if (ingresosError) throw error;                
 
-                const gastado = gastos.reduce((acc, item) => acc + item.monto, 0);
+                const gastado = gastos.reduce((acc, item) => acc + item.monto, 0).;
 				const disponible = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0) - gastado;
 				const presupuesto = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0)
 
-                this.gastado = gastado;
-				this.total = presupuesto.slice(2);
+                this.gastado = parseFloat(gastado.toFixed(2));
+				this.total = parseFloat(presupuesto.toFixed(2));
 
                 this.gastosDonutData = {
 					labels: ['Gastado', 'Disponible'],
