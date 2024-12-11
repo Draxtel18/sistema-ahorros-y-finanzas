@@ -1,11 +1,13 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router'
+import { SpeedInsights } from "@vercel/speed-insights/vue"
 import Sidebar from './components/Sidebar.vue';
 
 const route = useRoute();
 </script>
 
 <template>
+    <SpeedInsights />
     <Sidebar v-if="route.name !== 'login' && route.name !== 'register'"/>
     <RouterView />
 </template>
