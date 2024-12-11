@@ -4,6 +4,8 @@ import DonutChart from '@/components/DonutChart.vue';
 import LineChart from '@/components/LineChart.vue';
 import BarChart from '@/components/BarChart.vue';
 */
+import GraficoDonutGastosHome from './components/graficoDonutGastosHome.vue';
+import GraficoDonutAhorrosHome from './components/graficoDonutAhorrosHome.vue';
 import ModalPlan from './components/modalPlan.vue';
 import GraficoUltimosIngresos from '../Ingresos/components/graficoUltimosIngresos.vue';
 import { supabase } from '@/lib/supabaseClient.js';
@@ -13,7 +15,9 @@ export default {
 	components: {
 		ModalPlan,
 		GraficoUltimosIngresos,
-		GraficoUltimos
+		GraficoUltimos,
+		GraficoDonutGastosHome,
+    	GraficoDonutAhorrosHome,
 	},
 	data() {
 		return {
@@ -98,6 +102,7 @@ export default {
 				<div class="div2">
 					<h2>Gastos</h2>
 					<div class="donut">
+						<graficoDonutGastosHome :planActual="planActual" />
 						<!--
 							<DonutChart v-if="gastosData" :data="gastosData" />
 							<p>Has gastado {{ gastado }} de {{ total }} </p>
@@ -109,6 +114,7 @@ export default {
 				</div>
 				<div class="div3">
 					<h2>Ahorros</h2>
+					<graficoDonutAhorrosHome :planActual="planActual" />
 					<div>
 						<!--
 							<LineChart v-if="ahorrosData" :data="ahorrosData" />
