@@ -2,8 +2,6 @@
 import ModalEditarIngreso from './modalEditarIngreso.vue';
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
     components: {
         ModalEditarIngreso,
