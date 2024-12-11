@@ -41,7 +41,7 @@ export default {
 				const presupuesto = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0)
 
                 this.gastado = gastado;
-				this.total = presupuesto;
+				this.total = presupuesto.slice(2);
 
                 this.gastosDonutData = {
 					labels: ['Gastado', 'Disponible'],

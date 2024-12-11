@@ -72,6 +72,7 @@ const actualizarGastos = () => {
 	tablaGastosRef.value.fetchGastos()
 	graficoGastosRef.value.fetchGastos()
 	graficoUltimosRef.value.fetchGastos()
+	graficoDonutGastosRef.value.fetchGastos()
 }
 
 
