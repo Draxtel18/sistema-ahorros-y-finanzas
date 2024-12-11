@@ -36,7 +36,7 @@ export default {
 					.eq('id_plan', this.planActual.id_plan);
 				if (ingresosError) throw error;                
 
-                const gastado = gastos.reduce((acc, item) => acc + item.monto, 0).;
+                const gastado = gastos.reduce((acc, item) => acc + item.monto, 0);
 				const disponible = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0) - gastado;
 				const presupuesto = ingresos.reduce((acc2, item2) => acc2 + item2.monto, 0)
 
