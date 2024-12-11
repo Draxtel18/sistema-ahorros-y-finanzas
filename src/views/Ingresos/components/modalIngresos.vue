@@ -1,9 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
-
 export default {
     props: {
         show: Boolean,
@@ -27,7 +24,6 @@ export default {
             }
 
             try {
-                if (!user) return;
 
                 const { data, error } = await supabase
                     .from('plan_ingresos')

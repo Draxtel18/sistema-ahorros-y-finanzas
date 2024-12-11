@@ -9,8 +9,6 @@ import GraficoUltimosIngresos from '../Ingresos/components/graficoUltimosIngreso
 import { supabase } from '@/lib/supabaseClient.js';
 import GraficoUltimos from '../Gastos/components/graficoUltimos.vue';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
 	components: {
 		ModalPlan,
@@ -27,6 +25,9 @@ export default {
 	methods: {
 		async cargarPlanActual() {
 			try {
+				const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return;
+
 				const { data, error } = await supabase
 					.from("planesfinanzas")
 					.select("*")

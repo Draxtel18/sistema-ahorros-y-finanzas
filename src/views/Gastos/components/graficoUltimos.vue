@@ -1,7 +1,6 @@
 <script>
 import LineChart from '@/components/LineChart.vue';
 import { supabase } from '@/lib/supabaseClient.js';
-const { data: { user } } = await supabase.auth.getUser();
 
 export default {
     components: {
@@ -22,6 +21,9 @@ export default {
     methods: {
         async fetchGastos() {
             try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return;
+                
                 const { data: planes, error } = await supabase
                     .from('planesfinanzas')
                     .select('id_plan, fecha_inicio, sueldo_base, plan_gastos(monto)')

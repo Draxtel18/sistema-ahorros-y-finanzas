@@ -1,8 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
 	data() {
 		return {
@@ -13,7 +11,8 @@ export default {
 	methods: {
 		async fetchPlanes() {
 			try {
-				if (!user) return;
+				const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return;
 
 				const { data: planes, error } = await supabase
 					.from('planesfinanzas')

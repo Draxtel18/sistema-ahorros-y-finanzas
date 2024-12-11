@@ -1,8 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
 	data() {
 		return {
@@ -12,13 +10,15 @@ export default {
 	},
 	methods: {
 		async cargarPlanActual() {
+
+			const { data: { user } } = await supabase.auth.getUser()
+
 			const { data, error } = await supabase
 				.from("planesfinanzas")
 				.select("*")
 				.eq("estado", "activo")
 				.eq("id_usuario", user.id)
-				.maybeSingle();
-
+				.maybeSingle();				
 
 			if (error) {
 				console.error("Error al cargar el plan actual:", error.message);
@@ -58,7 +58,6 @@ export default {
 </template>
 
 <style scoped>
-
 section {
 	width: 100%;
 	height: 100%;
@@ -77,7 +76,7 @@ section {
 	grid-row-gap: 16px;
 }
 
-.ahorros-grid > div {
+.ahorros-grid>div {
 	background-color: blue;
 	border-radius: 1rem;
 	padding: 0.6rem;

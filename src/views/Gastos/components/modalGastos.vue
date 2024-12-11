@@ -1,9 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
-
 export default {
     props: {
         show: Boolean,
@@ -29,7 +26,6 @@ export default {
             }
 
             try {
-                if (!user) return;
 
                 // Enviar datos a la tabla 'gastos'
                 const { data, error } = await supabase
@@ -59,7 +55,6 @@ export default {
         },
         async fetchCategorias() {
             try {
-                if (!user) return;
 
                 const { data: subCategorias, error } = await supabase
                     .from('subcategorias')

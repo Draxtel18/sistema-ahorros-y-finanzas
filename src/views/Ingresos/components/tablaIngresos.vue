@@ -25,9 +25,8 @@ export default {
     methods: {
         async fetchIngreso() {
             try {
+                const { data: { user } } = await supabase.auth.getUser()
                 if (!user) return;
-
-                const currentDate = new Date();
 
                 const { data: ingresos, error } = await supabase
                     .from('plan_ingresos')

@@ -1,8 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
     props: {
         gasto: Object,
@@ -25,7 +23,6 @@ export default {
         },
         async fetchCategorias() {
             try {
-                if (!user) return;
 
                 const { data: categorias, error } = await supabase
                     .from('subcategorias')

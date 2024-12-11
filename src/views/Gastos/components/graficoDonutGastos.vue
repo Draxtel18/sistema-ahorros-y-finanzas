@@ -1,7 +1,6 @@
 <script>
 import DonutChart from '@/components/DonutChart.vue';
 import { supabase } from '@/lib/supabaseClient.js';
-const { data: { user } } = await supabase.auth.getUser();
 
 export default {
     components: {

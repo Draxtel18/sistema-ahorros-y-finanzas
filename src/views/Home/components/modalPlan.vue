@@ -1,9 +1,6 @@
 <script>
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
-
 export default {
     props: {
         show: Boolean
@@ -24,7 +21,10 @@ export default {
             }
 
             try {
-                // Crear el plan
+
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return;
+                
                 const { data: plan, error: errorPlan } = await supabase
                     .from("planesfinanzas")
                     .insert({
@@ -40,7 +40,6 @@ export default {
 
                 if (errorPlan) throw new Error(`Error al crear el plan: ${errorPlan.message}`);
                 
-                // Calcular la distribución
                 const sueldoBase = parseFloat(this.sueldoBase);
                 const necesidades = sueldoBase * 0.5;
                 const gustos = sueldoBase * 0.3;
@@ -54,7 +53,6 @@ export default {
                     ahorros: ahorros,
                 });
 
-                // Insertar distribución
                 const { error: errorDistribucion } = await supabase
                     .from("distribucionpresupuesto")
                     .insert({
@@ -70,7 +68,6 @@ export default {
                     throw new Error("Error al guardar la distribución del presupuesto");
                 }
 
-                // Registrar ingreso
                 const { error: errorIngreso } = await supabase
                     .from("plan_ingresos")
                     .insert({

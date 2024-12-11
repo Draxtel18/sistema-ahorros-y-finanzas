@@ -1,7 +1,6 @@
 <script>
 import BarChart from '@/components/BarChart.vue';
 import { supabase } from '@/lib/supabaseClient.js';
-const { data: { user } } = await supabase.auth.getUser();
 
 export default {
     components: {

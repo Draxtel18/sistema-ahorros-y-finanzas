@@ -2,8 +2,6 @@
 import ModalEditar from './modalEditar.vue';
 import { supabase } from '@/lib/supabaseClient.js';
 
-const { data: { user } } = await supabase.auth.getUser()
-
 export default {
     components: {
         ModalEditar,
@@ -25,8 +23,9 @@ export default {
     methods: {
         async fetchGastos() {
             try {
+                const { data: { user } } = await supabase.auth.getUser()
                 if (!user) return;
-
+                
                 const currentDate = new Date();
                 const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
                 const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString();
