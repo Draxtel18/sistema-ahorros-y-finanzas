@@ -1,63 +1,91 @@
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
+import TablaAhorros from './components/tablaAhorros.vue';
+import BotonAhorros from './components/botonAhorros.vue';
+import GraficoUltimosAhorros from './components/graficoUltimosAhorros.vue';
+import PromedioAhorros from './components/promedioAhorros.vue';
 
-export default {
-	data() {
-		return {
-			planActual: null,
-			loading: true,
-		}
-	},
-	methods: {
-		async cargarPlanActual() {
+const tablaAhorrosRef = ref(null);
+const graficoUltimosRef = ref(null);
+const promedioAhorrosRef = ref(null);
+const loading = ref(true);
+const user = ref(null);
+const planActual = ref(null);
 
-			const { data: { user } } = await supabase.auth.getUser()
-
-			const { data, error } = await supabase
-				.from("planesfinanzas")
-				.select("*")
-				.eq("estado", "activo")
-				.eq("id_usuario", user.id)
-				.maybeSingle();				
-
-			if (error) {
-				console.error("Error al cargar el plan actual:", error.message);
-				this.planActual = null;
-			} else {
-				this.planActual = data;
-			}
-		},
-	},
-	async mounted() {
-		await this.cargarPlanActual();
-		this.loading = false;
-	}
+async function fetchUser() {
+  const { data } = await supabase.auth.getUser();
+  user.value = data.user;
 }
+
+async function cargarPlanActual() {
+  const { data, error } = await supabase
+    .from('planesfinanzas')
+    .select('*')
+    .eq('estado', 'activo')
+    .eq('id_usuario', user.value.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error al cargar el plan actual:', error.message);
+    planActual.value = null;
+  } else {
+    planActual.value = data;
+  }
+}
+
+const actualizarAhorros = () => {
+  tablaAhorrosRef.value.fetchAhorro();
+  graficoUltimosRef.value.fetchAhorro();
+  promedioAhorrosRef.value.fetchAhorro();
+};
+
+onMounted(async () => {
+  await fetchUser();
+  await cargarPlanActual();
+  loading.value = false;
+});
 </script>
 
 <template>
+		
 	<main>
-		<section v-if="loading">
-			<svg viewBox="25 25 50 50">
-				<circle r="20" cy="50" cx="50"></circle>
-			</svg>
-		</section>
-		<section v-else>
-			<div class="ahorros-grid" v-if="planActual">
-				<div class="div1"> Ahorros </div>
-				<div class="div2"> Hola </div>
-				<div class="div3"> Hola </div>
-				<div class="div4"> Hola </div>
-			</div>
-			<div v-else>
-				<p>No tienes un plan activo.</p>
-				<router-link to="/">Ir a inicio</router-link>
-			</div>
-		</section>
-	</main>
+    <section v-if="loading">
+      <svg viewBox="25 25 50 50">
+        <circle r="20" cy="50" cx="50"></circle>
+      </svg>
+    </section>
+    <section v-else>
+      <div class="ahorros-grid" v-if="planActual">
+        <div class="div1">
+          <BotonAhorros :planActual="planActual" @ahorro-registrado="actualizarAhorros" />
+        </div>
+        <div class="div2">
+          <PromedioAhorros :planActual="planActual" ref="promedioAhorrosRef" />
+        </div>
+        <div class="div3">
+          <GraficoUltimosAhorros :planActual="planActual" ref="graficoUltimosRef" />
+        </div>
+        <div class="div4">
+          <TablaAhorros
+            :planActual="planActual"
+            ref="tablaAhorrosRef"
+            @ahorro-editado="actualizarAhorros"
+            @ahorro-eliminado="actualizarAhorros"
+          />
+        </div>
+      </div>
+      <div v-else>
+        <p>No tienes un plan activo.</p>
+        <router-link to="/">Ir a inicio</router-link>
+      </div>
+    </section>
+  </main>
 </template>
 
+
 <style scoped>
+
 section {
 	width: 100%;
 	height: 100%;
@@ -76,25 +104,49 @@ section {
 	grid-row-gap: 16px;
 }
 
-.ahorros-grid>div {
-	background-color: blue;
+.ahorros-grid > div {
 	border-radius: 1rem;
 	padding: 0.6rem;
 }
 
 .div1 {
 	grid-area: 1 / 1 / 3 / 6;
+	background-color: #e6ddd7;
 }
 
 .div2 {
 	grid-area: 3 / 1 / 6 / 6;
+	padding: 0 !important;
 }
 
 .div3 {
 	grid-area: 1 / 6 / 6 / 11;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .div4 {
 	grid-area: 6 / 1 / 12 / 11;
+	background-color: transparent;
+	border: 1px solid #6B7280;
 }
+
+
+@media (max-width: 900px) {
+	.ahorros-grid {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+	}
+
+	.div1,
+	.div2,
+	.div3,
+	.div4 {
+		grid-area: auto;
+		width: 100%;
+		height: fit-content;
+	}
+}
+
 </style>

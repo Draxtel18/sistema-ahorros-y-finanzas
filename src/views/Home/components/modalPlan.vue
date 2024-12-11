@@ -68,6 +68,22 @@ export default {
                     throw new Error("Error al guardar la distribución del presupuesto");
                 }
 
+                // 3. Registrar el monto de ahorros en plan_ahorro
+                const { error: errorAhorro } = await supabase
+                    .from("plan_ahorro")
+                    .insert({
+                        id_plan: plan.id_plan,
+                        monto: ahorros,
+                        fecha: new Date(),
+                        descripcion: "Monto inicial de ahorros",
+                    });
+
+                if (errorAhorro) {
+                    console.error("Error en el ahorro:", errorAhorro.message);
+                    throw new Error("Error al registrar el ahorro inicial en plan_ahorro");
+                }
+
+
                 const { error: errorIngreso } = await supabase
                     .from("plan_ingresos")
                     .insert({
