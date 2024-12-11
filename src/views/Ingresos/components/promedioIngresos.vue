@@ -39,11 +39,9 @@ export default {
                     return sum + sumaPlan;
                 }, 0);
 
-                console.log(totalIngresos);
-
                 const cantidadPlanes = planes.length;
 
-                this.promedio = totalIngresos / cantidadPlanes;
+                this.promedio = parseFloat(totalIngresos / cantidadPlanes).toFixed(2);
 
                 if (error) throw error;
             } catch (error) {

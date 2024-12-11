@@ -43,6 +43,8 @@ import { supabase } from '@/lib/supabaseClient.js'
 
 const tablaGastosRef = ref(null)
 const graficoGastosRef = ref(null)
+const graficoUltimosRef = ref(null)
+const graficoDonutGastosRef = ref(null)
 const loading = ref(true)
 const user = ref(null)
 const planActual = ref(null)

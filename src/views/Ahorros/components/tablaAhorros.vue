@@ -86,90 +86,86 @@ export default {
 </script>
 
 <template>
-    <div v-if="loading">
-        <svg viewBox="25 25 50 50">
-            <circle r="20" cy="50" cx="50"></circle>
-        </svg>
-    </div>
-    <div v-else>
-      <table class="tablita">
-        <thead>
-          <tr>
-            <th scope="col">Monto</th>
-            <th scope="col">Descripción</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Acciones</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="ahorro in ahorros" :key="ahorro.id_ahorro">
-            <td scope="row">{{ ahorro.monto }}</td>
-            <td>{{ ahorro.descripcion }}</td>
-            <td>{{ new Date(ahorro.fecha).toLocaleDateString() }}</td>
-            <td>
-              <button @click="openEditModal(ahorro)">Editar</button>
-              <button @click="deleteAhorro(ahorro.id_ahorro)">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <Teleport to="body">
-        <ModalEditarAhorro
-            v-if="showEditModal"
-            :show="showEditModal"
-            :ahorro="ahorroEditado"
-            @close="showEditModal = false"
-            @save="updateAhorro"
-        />
-        </Teleport>
-    </div>
+  <div v-if="loading">
+    <svg viewBox="25 25 50 50">
+      <circle r="20" cy="50" cx="50"></circle>
+    </svg>
+  </div>
+  <div v-else>
+    <table class="tablita">
+      <thead>
+        <tr>
+          <th scope="col">Monto</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Fecha</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="ahorro in ahorros" :key="ahorro.id_ahorro">
+          <td scope="row">{{ ahorro.monto }}</td>
+          <td>{{ ahorro.descripcion }}</td>
+          <td>{{ new Date(ahorro.fecha).toLocaleDateString() }}</td>
+          <td>
+            <button @click="openEditModal(ahorro)">Editar</button>
+          </td>
+          <td>
+            <button @click="deleteAhorro(ahorro.id_ahorro)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <Teleport to="body">
+      <ModalEditarAhorro v-if="showEditModal" :show="showEditModal" :ahorro="ahorroEditado"
+        @close="showEditModal = false" @save="updateAhorro" />
+    </Teleport>
+  </div>
 </template>
 
 <style scoped>
 div {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tablita {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 
 table {
-    width: 100%;
-    color: #6B7280;
+  width: 100%;
+  color: #6B7280;
 }
 
 thead {
-    color: #374151;
-    background-color: #F9FAFB;
+  color: #374151;
+  background-color: #F9FAFB;
 }
 
 thead>tr>th,
 tbody>tr>td,
 tbody>tr>th {
-    padding: 0.5rem 0.5rem;
-    text-align: center;
+  padding: 0.5rem 0.5rem;
+  text-align: center;
 }
 
 tbody>tr>th {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 button {
-    background-color: #6B7280;
-    width: 100%;
-    height: 30px;
-    border-radius: 0.5rem;
+  background-color: #6B7280;
+  width: 100%;
+  height: 30px;
+  border-radius: 0.5rem;
 }
 
 button:hover {
-    background-color: #93919f;
+  background-color: #93919f;
 }
 </style>

@@ -70,19 +70,15 @@ const router = createRouter({
   ]
 })
 
-// Guard de navegación global para verificar autenticación
 router.beforeEach(async (to, from, next) => {
   const { data } = await supabase.auth.getSession();
   const isAuthenticated = !!data.session;
 
-  // Si la ruta requiere autenticación y el usuario no está autenticado, redirige al login
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' });
   } else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
-    // Si el usuario ya está autenticado, redirige al home desde login o register
     next({ name: 'home' });
   } else {
-    // Permite la navegación
     next();
   }
 });

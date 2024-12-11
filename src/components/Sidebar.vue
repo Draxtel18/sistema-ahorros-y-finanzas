@@ -109,6 +109,7 @@ aside {
     height: 100vh;
     padding: 1rem;
     transition: 0.2s ease-in-out;
+    z-index: 100;
 }
 
 aside .flex {
