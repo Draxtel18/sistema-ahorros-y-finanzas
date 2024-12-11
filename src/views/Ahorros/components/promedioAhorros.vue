@@ -162,7 +162,7 @@ export default {
         <div class="card">
             <div class="ray"></div>
             <div class="text">S/{{ promedio }}</div>
-            <div>Ingresos promedios</div>
+            <div> Ahorros</div>
             <div class="line topl"></div>
             <div class="line leftl"></div>
             <div class="line bottoml"></div>
