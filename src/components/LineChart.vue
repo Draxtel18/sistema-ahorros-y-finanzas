@@ -45,35 +45,4 @@ export default {
     }
 };
 
-/*
-export default {
-    name: 'App',
-    components: {
-        Line
-    },
-    data() {
-        return {
-            data: {
-                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
-                datasets: [
-                    {
-                        
-                        backgroundColor: '#f87979',
-                        data: [400, 300, 380, 250, 410, 295]
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            }
-        }
-    }
-}
-*/
 </script>

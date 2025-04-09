@@ -36,36 +36,4 @@ export default {
     }
 };
 
-/*
-export default {
-    name: 'App',
-    components: {
-        Bar
-    },
-    data() {
-        return {
-            data: {
-                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
-                datasets: [
-                    {
-
-                        backgroundColor: '#f87979',
-                        data: [120, 0, 80, 100, 400, 215]
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-            }
-        }
-    }
-}
-    */
-
 </script>

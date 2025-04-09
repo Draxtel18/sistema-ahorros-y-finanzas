@@ -26,6 +26,9 @@ async function cargarPlanActual() {
 		.eq("id_usuario", user.value.id)
 		.maybeSingle();
 
+
+		console.log(data);
+		
 	if (error) {
 		console.error("Error al cargar el plan actual:", error.message)
 		planActual.value = null
